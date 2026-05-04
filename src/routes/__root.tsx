@@ -30,14 +30,18 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "SchengenSlot — Visa appointment alerts in Ireland" },
+      { title: "SchengenSlot — Visa Appointment Alerts" },
       { name: "description", content: "Instant alerts for Schengen visa appointment openings at VFS, BLS and TLS centres in Ireland." },
       { name: "author", content: "SchengenSlot" },
-      { property: "og:title", content: "SchengenSlot" },
-      { property: "og:description", content: "Instant Schengen visa appointment alerts." },
+      { property: "og:title", content: "SchengenSlot — Visa Appointment Alerts" },
+      { property: "og:description", content: "Instant alerts for Schengen visa appointment openings at VFS, BLS and TLS centres in Ireland." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "SchengenSlot — Visa Appointment Alerts" },
+      { name: "twitter:description", content: "Instant alerts for Schengen visa appointment openings at VFS, BLS and TLS centres in Ireland." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ed32b58c-cfc0-425f-93d1-0bc0ab953e3c/id-preview-f64f7732--439fb48f-dbf4-40ad-b774-5cbdfa072fd0.lovable.app-1777932688125.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ed32b58c-cfc0-425f-93d1-0bc0ab953e3c/id-preview-f64f7732--439fb48f-dbf4-40ad-b774-5cbdfa072fd0.lovable.app-1777932688125.png" },
     ],
     links: [
       {
