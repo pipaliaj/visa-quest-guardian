@@ -50,15 +50,21 @@ export const upsertCredential = createServerFn({ method: "POST" })
     const p = encryptField(data.password);
     const n = encryptField(data.notes);
 
-    const row: Record<string, unknown> = {
+    const row = {
       centre_id: data.centre_id,
       provider: data.provider,
       label: data.label,
       active: data.active ?? true,
+      username_ciphertext: u?.ciphertext ?? null,
+      username_iv: u?.iv ?? null,
+      username_tag: u?.tag ?? null,
+      password_ciphertext: p?.ciphertext ?? null,
+      password_iv: p?.iv ?? null,
+      password_tag: p?.tag ?? null,
+      notes_ciphertext: n?.ciphertext ?? null,
+      notes_iv: n?.iv ?? null,
+      notes_tag: n?.tag ?? null,
     };
-    if (u) { row.username_ciphertext = u.ciphertext; row.username_iv = u.iv; row.username_tag = u.tag; }
-    if (p) { row.password_ciphertext = p.ciphertext; row.password_iv = p.iv; row.password_tag = p.tag; }
-    if (n) { row.notes_ciphertext = n.ciphertext; row.notes_iv = n.iv; row.notes_tag = n.tag; }
 
     if (data.id) {
       const { error } = await supabaseAdmin
