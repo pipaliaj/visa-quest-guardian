@@ -27,10 +27,12 @@ import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as DashboardTrackersRouteImport } from './routes/dashboard.trackers'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
+import { Route as DashboardCredentialsRouteImport } from './routes/dashboard.credentials'
 import { Route as DashboardBillingRouteImport } from './routes/dashboard.billing'
 import { Route as DashboardAdminRouteImport } from './routes/dashboard.admin'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as ApiPublicSlotsRouteImport } from './routes/api/public/slots'
+import { Route as ApiPublicCredentialsRouteImport } from './routes/api/public/credentials'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
@@ -125,6 +127,11 @@ const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardCredentialsRoute = DashboardCredentialsRouteImport.update({
+  id: '/credentials',
+  path: '/credentials',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardBillingRoute = DashboardBillingRouteImport.update({
   id: '/billing',
   path: '/billing',
@@ -143,6 +150,11 @@ const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
 const ApiPublicSlotsRoute = ApiPublicSlotsRouteImport.update({
   id: '/api/public/slots',
   path: '/api/public/slots',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicCredentialsRoute = ApiPublicCredentialsRouteImport.update({
+  id: '/api/public/credentials',
+  path: '/api/public/credentials',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LovableEmailTransactionalSendRoute =
@@ -179,12 +191,14 @@ export interface FileRoutesByFullPath {
   '/unsubscribe': typeof UnsubscribeRoute
   '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/billing': typeof DashboardBillingRoute
+  '/dashboard/credentials': typeof DashboardCredentialsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/trackers': typeof DashboardTrackersRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/api/public/credentials': typeof ApiPublicCredentialsRoute
   '/api/public/slots': typeof ApiPublicSlotsRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -205,12 +219,14 @@ export interface FileRoutesByTo {
   '/unsubscribe': typeof UnsubscribeRoute
   '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/billing': typeof DashboardBillingRoute
+  '/dashboard/credentials': typeof DashboardCredentialsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/trackers': typeof DashboardTrackersRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/api/public/credentials': typeof ApiPublicCredentialsRoute
   '/api/public/slots': typeof ApiPublicSlotsRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -233,12 +249,14 @@ export interface FileRoutesById {
   '/unsubscribe': typeof UnsubscribeRoute
   '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/billing': typeof DashboardBillingRoute
+  '/dashboard/credentials': typeof DashboardCredentialsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/trackers': typeof DashboardTrackersRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/api/public/credentials': typeof ApiPublicCredentialsRoute
   '/api/public/slots': typeof ApiPublicSlotsRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -262,12 +280,14 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/dashboard/admin'
     | '/dashboard/billing'
+    | '/dashboard/credentials'
     | '/dashboard/settings'
     | '/dashboard/trackers'
     | '/email/unsubscribe'
     | '/legal/privacy'
     | '/legal/terms'
     | '/dashboard/'
+    | '/api/public/credentials'
     | '/api/public/slots'
     | '/lovable/email/suppression'
     | '/lovable/email/queue/process'
@@ -288,12 +308,14 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/dashboard/admin'
     | '/dashboard/billing'
+    | '/dashboard/credentials'
     | '/dashboard/settings'
     | '/dashboard/trackers'
     | '/email/unsubscribe'
     | '/legal/privacy'
     | '/legal/terms'
     | '/dashboard'
+    | '/api/public/credentials'
     | '/api/public/slots'
     | '/lovable/email/suppression'
     | '/lovable/email/queue/process'
@@ -315,12 +337,14 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/dashboard/admin'
     | '/dashboard/billing'
+    | '/dashboard/credentials'
     | '/dashboard/settings'
     | '/dashboard/trackers'
     | '/email/unsubscribe'
     | '/legal/privacy'
     | '/legal/terms'
     | '/dashboard/'
+    | '/api/public/credentials'
     | '/api/public/slots'
     | '/lovable/email/suppression'
     | '/lovable/email/queue/process'
@@ -344,6 +368,7 @@ export interface RootRouteChildren {
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   LegalPrivacyRoute: typeof LegalPrivacyRoute
   LegalTermsRoute: typeof LegalTermsRoute
+  ApiPublicCredentialsRoute: typeof ApiPublicCredentialsRoute
   ApiPublicSlotsRoute: typeof ApiPublicSlotsRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -479,6 +504,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardSettingsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/credentials': {
+      id: '/dashboard/credentials'
+      path: '/credentials'
+      fullPath: '/dashboard/credentials'
+      preLoaderRoute: typeof DashboardCredentialsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/billing': {
       id: '/dashboard/billing'
       path: '/billing'
@@ -505,6 +537,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/slots'
       fullPath: '/api/public/slots'
       preLoaderRoute: typeof ApiPublicSlotsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/credentials': {
+      id: '/api/public/credentials'
+      path: '/api/public/credentials'
+      fullPath: '/api/public/credentials'
+      preLoaderRoute: typeof ApiPublicCredentialsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lovable/email/transactional/send': {
@@ -534,6 +573,7 @@ declare module '@tanstack/react-router' {
 interface DashboardRouteChildren {
   DashboardAdminRoute: typeof DashboardAdminRoute
   DashboardBillingRoute: typeof DashboardBillingRoute
+  DashboardCredentialsRoute: typeof DashboardCredentialsRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardTrackersRoute: typeof DashboardTrackersRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
@@ -542,6 +582,7 @@ interface DashboardRouteChildren {
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAdminRoute: DashboardAdminRoute,
   DashboardBillingRoute: DashboardBillingRoute,
+  DashboardCredentialsRoute: DashboardCredentialsRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardTrackersRoute: DashboardTrackersRoute,
   DashboardIndexRoute: DashboardIndexRoute,
@@ -567,6 +608,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   LegalPrivacyRoute: LegalPrivacyRoute,
   LegalTermsRoute: LegalTermsRoute,
+  ApiPublicCredentialsRoute: ApiPublicCredentialsRoute,
   ApiPublicSlotsRoute: ApiPublicSlotsRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
