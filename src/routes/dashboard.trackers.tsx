@@ -9,7 +9,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Plus, Trash2, Radar } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
 
 type Country = { id: string; name: string; code: string; flag_emoji: string | null };
 type Centre = { id: string; city: string; country_id: string; provider: string };
