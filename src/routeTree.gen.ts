@@ -13,6 +13,7 @@ import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as CountriesRouteImport } from './routes/countries'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as IndexRouteImport } from './routes/index'
 
 const PricingRoute = PricingRouteImport.update({
@@ -35,6 +36,11 @@ const CountriesRoute = CountriesRouteImport.update({
   path: '/countries',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -43,6 +49,7 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/contact': typeof ContactRoute
   '/countries': typeof CountriesRoute
   '/faq': typeof FaqRoute
   '/how-it-works': typeof HowItWorksRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/contact': typeof ContactRoute
   '/countries': typeof CountriesRoute
   '/faq': typeof FaqRoute
   '/how-it-works': typeof HowItWorksRoute
@@ -58,6 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/contact': typeof ContactRoute
   '/countries': typeof CountriesRoute
   '/faq': typeof FaqRoute
   '/how-it-works': typeof HowItWorksRoute
@@ -65,14 +74,28 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/countries' | '/faq' | '/how-it-works' | '/pricing'
+  fullPaths:
+    | '/'
+    | '/contact'
+    | '/countries'
+    | '/faq'
+    | '/how-it-works'
+    | '/pricing'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/countries' | '/faq' | '/how-it-works' | '/pricing'
-  id: '__root__' | '/' | '/countries' | '/faq' | '/how-it-works' | '/pricing'
+  to: '/' | '/contact' | '/countries' | '/faq' | '/how-it-works' | '/pricing'
+  id:
+    | '__root__'
+    | '/'
+    | '/contact'
+    | '/countries'
+    | '/faq'
+    | '/how-it-works'
+    | '/pricing'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ContactRoute: typeof ContactRoute
   CountriesRoute: typeof CountriesRoute
   FaqRoute: typeof FaqRoute
   HowItWorksRoute: typeof HowItWorksRoute
@@ -109,6 +132,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CountriesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -121,6 +151,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ContactRoute: ContactRoute,
   CountriesRoute: CountriesRoute,
   FaqRoute: FaqRoute,
   HowItWorksRoute: HowItWorksRoute,
