@@ -4,6 +4,63 @@
  * Run: node scrape-tls.mjs [--once]
  */
 import { runScraper } from './lib/runner.mjs';
+import { waitForOtp } from './lib/otp-imap.mjs';
+
+const OTP_WAIT_SEC = Number(process.env.OTP_WAIT_SEC || '120');
+
+/**
+ * TLScontact login: email + password, optional email OTP.
+ * Selectors are best-effort; tweak per the actual page once observed.
+ */
+async function login(page, _target, credential) {
+  const emailSel = 'input[type="email"], input[name*="mail" i], input[id*="mail" i], input[name="username"]';
+  const passSel  = 'input[type="password"], input[name*="pass" i], input[id*="pass" i]';
+  const submitSel = 'button[type="submit"], input[type="submit"], button:has-text("Sign in"), button:has-text("Log in"), button:has-text("Login")';
+
+  const cookieBtn = await page.$('button:has-text("Accept"), button:has-text("Agree"), #onetrust-accept-btn-handler');
+  if (cookieBtn) { try { await cookieBtn.click({ timeout: 2000 }); } catch {} }
+
+  const email = await page.waitForSelector(emailSel, { timeout: 15000 });
+  await email.fill(credential.username);
+
+  const pass = await page.waitForSelector(passSel, { timeout: 5000 });
+  await pass.fill(credential.password);
+
+  const captcha = await page.$('iframe[src*="recaptcha"], iframe[src*="hcaptcha"], [class*="captcha"]');
+  if (captcha) {
+    console.warn('[tls][login] captcha detected — manual solve required');
+    throw new Error('CAPTCHA_REQUIRED');
+  }
+
+  const submit = await page.waitForSelector(submitSel, { timeout: 5000 });
+  await Promise.all([
+    page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {}),
+    submit.click(),
+  ]);
+
+  const otpSel = 'input[name*="otp" i], input[id*="otp" i], input[name*="code" i]';
+  const otpField = await page.$(otpSel);
+  if (otpField) {
+    console.log('[tls][login] OTP screen detected, polling inbox...');
+    const submittedAt = new Date(Date.now() - 30_000);
+    let otp;
+    try {
+      otp = await waitForOtp({ since: submittedAt, timeoutMs: OTP_WAIT_SEC * 1000 });
+    } catch (e) {
+      console.error('[tls][login] OTP fetch failed:', e.message);
+      throw new Error('OTP_FETCH_FAILED');
+    }
+    console.log(`[tls][login] got OTP (${otp.length} digits), submitting...`);
+    await otpField.fill(otp);
+
+    const otpSubmitSel = 'button[type="submit"], button:has-text("Verify"), button:has-text("Submit"), button:has-text("Continue")';
+    const otpSubmit = await page.waitForSelector(otpSubmitSel, { timeout: 5000 });
+    await Promise.all([
+      page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {}),
+      otpSubmit.click(),
+    ]);
+  }
+}
 
 /**
  * TLScontact appointment pages typically render slots as buttons containing
@@ -47,7 +104,7 @@ async function extractSlots(page) {
   });
 }
 
-runScraper({ provider: 'tls', targetsFile: 'targets-tls.json', extractSlots }).catch((e) => {
+runScraper({ provider: 'tls', targetsFile: 'targets-tls.json', extractSlots, login }).catch((e) => {
   console.error('[fatal]', e);
   process.exit(1);
 });
