@@ -15,6 +15,7 @@ import { Route as FaqRouteImport } from './routes/faq'
 import { Route as CountriesRouteImport } from './routes/countries'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LegalTermsRouteImport } from './routes/legal.terms'
 
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
@@ -46,6 +47,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LegalTermsRoute = LegalTermsRouteImport.update({
+  id: '/legal/terms',
+  path: '/legal/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -54,6 +60,7 @@ export interface FileRoutesByFullPath {
   '/faq': typeof FaqRoute
   '/how-it-works': typeof HowItWorksRoute
   '/pricing': typeof PricingRoute
+  '/legal/terms': typeof LegalTermsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,6 +69,7 @@ export interface FileRoutesByTo {
   '/faq': typeof FaqRoute
   '/how-it-works': typeof HowItWorksRoute
   '/pricing': typeof PricingRoute
+  '/legal/terms': typeof LegalTermsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,6 +79,7 @@ export interface FileRoutesById {
   '/faq': typeof FaqRoute
   '/how-it-works': typeof HowItWorksRoute
   '/pricing': typeof PricingRoute
+  '/legal/terms': typeof LegalTermsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -81,8 +90,16 @@ export interface FileRouteTypes {
     | '/faq'
     | '/how-it-works'
     | '/pricing'
+    | '/legal/terms'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/contact' | '/countries' | '/faq' | '/how-it-works' | '/pricing'
+  to:
+    | '/'
+    | '/contact'
+    | '/countries'
+    | '/faq'
+    | '/how-it-works'
+    | '/pricing'
+    | '/legal/terms'
   id:
     | '__root__'
     | '/'
@@ -91,6 +108,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/how-it-works'
     | '/pricing'
+    | '/legal/terms'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -100,6 +118,7 @@ export interface RootRouteChildren {
   FaqRoute: typeof FaqRoute
   HowItWorksRoute: typeof HowItWorksRoute
   PricingRoute: typeof PricingRoute
+  LegalTermsRoute: typeof LegalTermsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -146,6 +165,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/legal/terms': {
+      id: '/legal/terms'
+      path: '/legal/terms'
+      fullPath: '/legal/terms'
+      preLoaderRoute: typeof LegalTermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -156,6 +182,7 @@ const rootRouteChildren: RootRouteChildren = {
   FaqRoute: FaqRoute,
   HowItWorksRoute: HowItWorksRoute,
   PricingRoute: PricingRoute,
+  LegalTermsRoute: LegalTermsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
