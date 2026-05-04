@@ -19,6 +19,30 @@ import { TEMPLATES } from "@/lib/email-templates/registry";
 const SILENT_THRESHOLD_MIN = 30;
 const SITE_NAME = "Schengen Slot Finder";
 const FROM_DOMAIN = "notify.jaypipalia.com";
+const SENDER_DOMAIN = "notify.jaypipalia.com";
+
+function generateToken(): string {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function ensureUnsubscribeToken(email: string): Promise<string | null> {
+  const normalized = email.toLowerCase();
+  const { data: existing } = await supabaseAdmin
+    .from("email_unsubscribe_tokens")
+    .select("token,used_at")
+    .eq("email", normalized)
+    .maybeSingle();
+  if (existing && !(existing as any).used_at) return (existing as any).token;
+  if (existing && (existing as any).used_at) return null;
+  const token = generateToken();
+  const { error } = await supabaseAdmin
+    .from("email_unsubscribe_tokens")
+    .insert({ email: normalized, token } as any);
+  if (error) return null;
+  return token;
+}
 
 export const Route = createFileRoute("/api/public/hooks/scraper-watchdog")({
   server: {
@@ -89,6 +113,9 @@ export const Route = createFileRoute("/api/public/hooks/scraper-watchdog")({
               .maybeSingle();
             if (existing) continue;
 
+            const unsubscribeToken = await ensureUnsubscribeToken(email);
+            if (!unsubscribeToken) continue; // already unsubscribed
+
             const messageId = crypto.randomUUID();
             const { error: enqErr } = await supabaseAdmin.rpc("enqueue_email" as any, {
               queue_name: "transactional_emails",
@@ -96,12 +123,13 @@ export const Route = createFileRoute("/api/public/hooks/scraper-watchdog")({
                 message_id: messageId,
                 to: email,
                 from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
-                sender_domain: FROM_DOMAIN,
+                sender_domain: SENDER_DOMAIN,
                 subject,
                 html,
                 text,
                 purpose: "transactional",
                 label: "scraper-down",
+                unsubscribe_token: unsubscribeToken,
                 idempotency_key: idempotencyKey,
                 queued_at: new Date().toISOString(),
               },
