@@ -1,0 +1,20 @@
+[Unit]
+Description=Slot scraper (VFS Global)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=scraper
+WorkingDirectory=/opt/slot-scraper
+EnvironmentFile=/opt/slot-scraper/.env
+ExecStart=/usr/bin/node /opt/slot-scraper/scrape-vfs.mjs
+Restart=always
+RestartSec=10
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/opt/slot-scraper
+
+[Install]
+WantedBy=multi-user.target
