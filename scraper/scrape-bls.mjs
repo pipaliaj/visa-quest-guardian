@@ -10,6 +10,68 @@
  * Inspect a real page with `HEADLESS=false node scrape-bls.mjs --once` and adjust.
  */
 import { runScraper } from './lib/runner.mjs';
+import { waitForOtp } from './lib/otp-imap.mjs';
+
+const OTP_WAIT_SEC = Number(process.env.OTP_WAIT_SEC || '120');
+
+/**
+ * BLS login: many BLS portals require email + password (sometimes a captcha).
+ * Some portals also send an email OTP after sign-in. We optimistically handle
+ * both — if no OTP screen appears, we just proceed.
+ * Selectors are best-effort; tweak per the actual page once observed.
+ */
+async function login(page, _target, credential) {
+  const emailSel = 'input[type="email"], input[name*="mail" i], input[id*="mail" i], input[name*="user" i]';
+  const passSel  = 'input[type="password"], input[name*="pass" i], input[id*="pass" i]';
+  const submitSel = 'button[type="submit"], input[type="submit"], button:has-text("Sign in"), button:has-text("Login"), button:has-text("Log in")';
+
+  // Dismiss cookie banner if present
+  const cookieBtn = await page.$('button:has-text("Accept"), button:has-text("Agree"), button:has-text("OK")');
+  if (cookieBtn) { try { await cookieBtn.click({ timeout: 2000 }); } catch {} }
+
+  const email = await page.waitForSelector(emailSel, { timeout: 15000 });
+  await email.fill(credential.username);
+
+  const pass = await page.waitForSelector(passSel, { timeout: 5000 });
+  await pass.fill(credential.password);
+
+  // Detect captcha — bail with a clear error so the operator can intervene
+  const captcha = await page.$('iframe[src*="recaptcha"], iframe[src*="hcaptcha"], [class*="captcha"]');
+  if (captcha) {
+    console.warn('[bls][login] captcha detected — manual solve required');
+    throw new Error('CAPTCHA_REQUIRED');
+  }
+
+  const submit = await page.waitForSelector(submitSel, { timeout: 5000 });
+  await Promise.all([
+    page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {}),
+    submit.click(),
+  ]);
+
+  // Optional OTP screen
+  const otpSel = 'input[name*="otp" i], input[id*="otp" i], input[name*="code" i]';
+  const otpField = await page.$(otpSel);
+  if (otpField) {
+    console.log('[bls][login] OTP screen detected, polling inbox...');
+    const submittedAt = new Date(Date.now() - 30_000);
+    let otp;
+    try {
+      otp = await waitForOtp({ since: submittedAt, timeoutMs: OTP_WAIT_SEC * 1000 });
+    } catch (e) {
+      console.error('[bls][login] OTP fetch failed:', e.message);
+      throw new Error('OTP_FETCH_FAILED');
+    }
+    console.log(`[bls][login] got OTP (${otp.length} digits), submitting...`);
+    await otpField.fill(otp);
+
+    const otpSubmitSel = 'button[type="submit"], button:has-text("Verify"), button:has-text("Submit"), button:has-text("Continue")';
+    const otpSubmit = await page.waitForSelector(otpSubmitSel, { timeout: 5000 });
+    await Promise.all([
+      page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {}),
+      otpSubmit.click(),
+    ]);
+  }
+}
 
 async function extractSlots(page) {
   return await page.evaluate(() => {
@@ -61,7 +123,7 @@ async function extractSlots(page) {
   });
 }
 
-runScraper({ provider: 'bls', targetsFile: 'targets-bls.json', extractSlots }).catch((e) => {
+runScraper({ provider: 'bls', targetsFile: 'targets-bls.json', extractSlots, login }).catch((e) => {
   console.error('[fatal]', e);
   process.exit(1);
 });
