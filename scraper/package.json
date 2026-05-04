@@ -1,0 +1,14 @@
+{
+  "name": "slot-scraper",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "node scrape.mjs",
+    "once": "node scrape.mjs --once"
+  },
+  "dependencies": {
+    "playwright": "^1.48.0",
+    "dotenv": "^16.4.5"
+  }
+}
