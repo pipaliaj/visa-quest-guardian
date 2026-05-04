@@ -54,8 +54,8 @@ function CredentialsPage() {
       setCentres((ce.data ?? []) as Centre[]);
       try {
         const r = await list();
-        setCreds(r.credentials as Cred[]);
-      } catch {}
+        setCreds(((r?.credentials ?? []) as Cred[]));
+      } catch (e) { console.error("listCredentials failed", e); }
     })();
   }, [navigate, list]);
 
@@ -83,7 +83,7 @@ function CredentialsPage() {
       toast.success("Credential saved (encrypted)");
       setLabel(""); setUsername(""); setPassword(""); setNotes("");
       const r = await list();
-      setCreds(r.credentials as Cred[]);
+      setCreds(((r?.credentials ?? []) as Cred[]));
     } catch (e: any) { toast.error(e?.message ?? "Failed"); }
   };
 
