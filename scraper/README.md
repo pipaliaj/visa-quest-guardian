@@ -20,6 +20,33 @@ The webhook is idempotent — duplicates are safely ignored.
 
 ---
 
+## VFS email OTP (automatic)
+
+VFS Global sends a 6-digit OTP to the login email after username/password is
+submitted. The scraper retrieves it automatically via IMAP.
+
+1. Use a dedicated mailbox per VFS login (a Gmail with an **App Password** is
+   the simplest option — IMAP must be enabled and 2FA must be on to create one).
+2. In `.env`, set:
+   ```
+   IMAP_HOST=imap.gmail.com
+   IMAP_PORT=993
+   IMAP_USER=your-vfs-login@gmail.com
+   IMAP_PASS=xxxx xxxx xxxx xxxx     # 16-char app password
+   IMAP_TLS=true
+   OTP_WAIT_SEC=120
+   OTP_FROM_FILTER=vfsglobal
+   OTP_SUBJECT_FILTER=
+   ```
+3. The credential stored in the app's vault should match `IMAP_USER`.
+4. Run `node scrape-vfs.mjs --once` and watch the logs — you'll see
+   `OTP screen detected, polling inbox...` then `got OTP (6 digits), submitting...`.
+
+If the From line on real OTP emails differs (e.g. `noreply@vfsglobal.com`),
+adjust `OTP_FROM_FILTER` accordingly.
+
+---
+
 ## Setup (Ubuntu VPS, ~5 minutes)
 
 ```bash

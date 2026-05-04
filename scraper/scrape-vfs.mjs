@@ -11,6 +11,9 @@
  * Inspect a real page with `HEADLESS=false node scrape-vfs.mjs --once` and adjust.
  */
 import { runScraper } from './lib/runner.mjs';
+import { waitForOtp } from './lib/otp-imap.mjs';
+
+const OTP_WAIT_SEC = Number(process.env.OTP_WAIT_SEC || '120');
 
 /**
  * VFS login: enter email + password, click sign-in.
@@ -42,8 +45,24 @@ async function login(page, _target, credential) {
   const otpSel = 'input[name*="otp" i], input[id*="otp" i], input[name*="code" i]';
   const otpField = await page.$(otpSel);
   if (otpField) {
-    console.warn('[vfs][login] OTP required — email OTP capture not implemented yet, aborting this poll.');
-    throw new Error('OTP_REQUIRED');
+    console.log('[vfs][login] OTP screen detected, polling inbox...');
+    const submittedAt = new Date(Date.now() - 30_000); // small overlap
+    let otp;
+    try {
+      otp = await waitForOtp({ since: submittedAt, timeoutMs: OTP_WAIT_SEC * 1000 });
+    } catch (e) {
+      console.error('[vfs][login] OTP fetch failed:', e.message);
+      throw new Error('OTP_FETCH_FAILED');
+    }
+    console.log(`[vfs][login] got OTP (${otp.length} digits), submitting...`);
+    await otpField.fill(otp);
+
+    const otpSubmitSel = 'button[type="submit"], button:has-text("Verify"), button:has-text("Submit"), button:has-text("Continue")';
+    const otpSubmit = await page.waitForSelector(otpSubmitSel, { timeout: 5000 });
+    await Promise.all([
+      page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {}),
+      otpSubmit.click(),
+    ]);
   }
 }
 
