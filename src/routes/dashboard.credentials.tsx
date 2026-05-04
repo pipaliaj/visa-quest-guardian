@@ -42,6 +42,12 @@ function CredentialsPage() {
   const upsert = useServerFn(upsertCredential);
   const del = useServerFn(deleteCredential);
 
+  const getAuthHeaders = async () => {
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    return token ? { authorization: `Bearer ${token}` } : undefined;
+  };
+
   useEffect(() => {
     (async () => {
       const { data: u } = await supabase.auth.getUser();
@@ -53,7 +59,7 @@ function CredentialsPage() {
       const ce = await supabase.from("centres").select("id,city").order("city");
       setCentres((ce.data ?? []) as Centre[]);
       try {
-        const r = await list();
+        const r = await list({ headers: await getAuthHeaders() });
         setCreds(((r?.credentials ?? []) as Cred[]));
       } catch (e) { console.error("listCredentials failed", e); }
     })();
@@ -72,17 +78,20 @@ function CredentialsPage() {
   const onSave = async () => {
     if (!centreId || !provider || !label) return toast.error("Centre, provider, label required");
     try {
-      await upsert({ data: {
-        centre_id: centreId,
-        provider: provider as typeof PROVIDERS[number],
-        label,
-        username: username || null,
-        password: password || null,
-        notes: notes || null,
-      } });
+      await upsert({
+        data: {
+          centre_id: centreId,
+          provider: provider as typeof PROVIDERS[number],
+          label,
+          username: username || null,
+          password: password || null,
+          notes: notes || null,
+        },
+        headers: await getAuthHeaders(),
+      });
       toast.success("Credential saved (encrypted)");
       setLabel(""); setUsername(""); setPassword(""); setNotes("");
-      const r = await list();
+      const r = await list({ headers: await getAuthHeaders() });
       setCreds(((r?.credentials ?? []) as Cred[]));
     } catch (e: any) { toast.error(e?.message ?? "Failed"); }
   };
@@ -90,7 +99,7 @@ function CredentialsPage() {
   const onDelete = async (id: string) => {
     if (!confirm("Delete this credential?")) return;
     try {
-      await del({ data: { id } });
+      await del({ data: { id }, headers: await getAuthHeaders() });
       setCreds((cs) => cs.filter((c) => c.id !== id));
     } catch (e: any) { toast.error(e?.message ?? "Failed"); }
   };
