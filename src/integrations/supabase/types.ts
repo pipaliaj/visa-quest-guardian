@@ -506,6 +506,12 @@ export type Database = {
         }
         Returns: string
       }
+      match_trackers_for_slot: {
+        Args: { _slot_event_id: string }
+        Returns: {
+          user_id: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "user"
