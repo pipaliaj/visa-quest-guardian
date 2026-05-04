@@ -31,6 +31,7 @@ import { Route as DashboardBillingRouteImport } from './routes/dashboard.billing
 import { Route as DashboardAdminRouteImport } from './routes/dashboard.admin'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as ApiPublicSlotsRouteImport } from './routes/api/public/slots'
+import { Route as ApiPublicCredentialsRouteImport } from './routes/api/public/credentials'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
@@ -145,6 +146,11 @@ const ApiPublicSlotsRoute = ApiPublicSlotsRouteImport.update({
   path: '/api/public/slots',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicCredentialsRoute = ApiPublicCredentialsRouteImport.update({
+  id: '/api/public/credentials',
+  path: '/api/public/credentials',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailTransactionalSendRoute =
   LovableEmailTransactionalSendRouteImport.update({
     id: '/lovable/email/transactional/send',
@@ -185,6 +191,7 @@ export interface FileRoutesByFullPath {
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/api/public/credentials': typeof ApiPublicCredentialsRoute
   '/api/public/slots': typeof ApiPublicSlotsRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -211,6 +218,7 @@ export interface FileRoutesByTo {
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/api/public/credentials': typeof ApiPublicCredentialsRoute
   '/api/public/slots': typeof ApiPublicSlotsRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -239,6 +247,7 @@ export interface FileRoutesById {
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/api/public/credentials': typeof ApiPublicCredentialsRoute
   '/api/public/slots': typeof ApiPublicSlotsRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -268,6 +277,7 @@ export interface FileRouteTypes {
     | '/legal/privacy'
     | '/legal/terms'
     | '/dashboard/'
+    | '/api/public/credentials'
     | '/api/public/slots'
     | '/lovable/email/suppression'
     | '/lovable/email/queue/process'
@@ -294,6 +304,7 @@ export interface FileRouteTypes {
     | '/legal/privacy'
     | '/legal/terms'
     | '/dashboard'
+    | '/api/public/credentials'
     | '/api/public/slots'
     | '/lovable/email/suppression'
     | '/lovable/email/queue/process'
@@ -321,6 +332,7 @@ export interface FileRouteTypes {
     | '/legal/privacy'
     | '/legal/terms'
     | '/dashboard/'
+    | '/api/public/credentials'
     | '/api/public/slots'
     | '/lovable/email/suppression'
     | '/lovable/email/queue/process'
@@ -344,6 +356,7 @@ export interface RootRouteChildren {
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   LegalPrivacyRoute: typeof LegalPrivacyRoute
   LegalTermsRoute: typeof LegalTermsRoute
+  ApiPublicCredentialsRoute: typeof ApiPublicCredentialsRoute
   ApiPublicSlotsRoute: typeof ApiPublicSlotsRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -507,6 +520,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicSlotsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/credentials': {
+      id: '/api/public/credentials'
+      path: '/api/public/credentials'
+      fullPath: '/api/public/credentials'
+      preLoaderRoute: typeof ApiPublicCredentialsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/transactional/send': {
       id: '/lovable/email/transactional/send'
       path: '/lovable/email/transactional/send'
@@ -567,6 +587,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   LegalPrivacyRoute: LegalPrivacyRoute,
   LegalTermsRoute: LegalTermsRoute,
+  ApiPublicCredentialsRoute: ApiPublicCredentialsRoute,
   ApiPublicSlotsRoute: ApiPublicSlotsRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
