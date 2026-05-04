@@ -279,6 +279,71 @@ export type Database = {
         }
         Relationships: []
       }
+      scraper_credentials: {
+        Row: {
+          active: boolean
+          centre_id: string
+          created_at: string
+          id: string
+          label: string
+          notes_ciphertext: string | null
+          notes_iv: string | null
+          notes_tag: string | null
+          password_ciphertext: string | null
+          password_iv: string | null
+          password_tag: string | null
+          provider: Database["public"]["Enums"]["provider_type"]
+          updated_at: string
+          username_ciphertext: string | null
+          username_iv: string | null
+          username_tag: string | null
+        }
+        Insert: {
+          active?: boolean
+          centre_id: string
+          created_at?: string
+          id?: string
+          label: string
+          notes_ciphertext?: string | null
+          notes_iv?: string | null
+          notes_tag?: string | null
+          password_ciphertext?: string | null
+          password_iv?: string | null
+          password_tag?: string | null
+          provider: Database["public"]["Enums"]["provider_type"]
+          updated_at?: string
+          username_ciphertext?: string | null
+          username_iv?: string | null
+          username_tag?: string | null
+        }
+        Update: {
+          active?: boolean
+          centre_id?: string
+          created_at?: string
+          id?: string
+          label?: string
+          notes_ciphertext?: string | null
+          notes_iv?: string | null
+          notes_tag?: string | null
+          password_ciphertext?: string | null
+          password_iv?: string | null
+          password_tag?: string | null
+          provider?: Database["public"]["Enums"]["provider_type"]
+          updated_at?: string
+          username_ciphertext?: string | null
+          username_iv?: string | null
+          username_tag?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scraper_credentials_centre_id_fkey"
+            columns: ["centre_id"]
+            isOneToOne: false
+            referencedRelation: "centres"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       scraper_keys: {
         Row: {
           active: boolean
