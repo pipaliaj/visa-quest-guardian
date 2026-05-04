@@ -42,6 +42,33 @@ async function postSignedJSON(payload) {
 }
 
 /**
+ * Fetch decrypted credentials for a centre + provider from the app's vault.
+ * Returns [{ id, label, username, password, notes }] or [] if none set.
+ * Uses the same scraper key + HMAC signature as slot posting.
+ */
+export async function fetchCredentials({ centreId, provider }) {
+  if (!WEBHOOK_URL) throw new Error('WEBHOOK_URL not set');
+  const credUrl = WEBHOOK_URL.replace(/\/slots$/, '/credentials');
+  const body = JSON.stringify({ centre_id: centreId, provider });
+  const signature = createHmac('sha256', SCRAPER_KEY).update(body).digest('hex');
+  const res = await fetch(credUrl, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-scraper-key': SCRAPER_KEY,
+      'x-scraper-signature': signature,
+    },
+    body,
+  });
+  if (!res.ok) {
+    console.error(`[credentials] ${res.status} ${await res.text()}`);
+    return [];
+  }
+  const json = await res.json();
+  return json.credentials || [];
+}
+
+/**
  * @param {object} opts
  * @param {string} opts.provider     - 'tls' | 'vfs' | 'bls'
  * @param {string} opts.targetsFile  - e.g. 'targets-tls.json'
