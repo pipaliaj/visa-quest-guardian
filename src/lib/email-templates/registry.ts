@@ -9,7 +9,9 @@ export interface TemplateEntry {
 }
 
 import { template as slotAlert } from './slot-alert'
+import { template as scraperDown } from './scraper-down'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'slot-alert': slotAlert,
+  'scraper-down': scraperDown,
 }

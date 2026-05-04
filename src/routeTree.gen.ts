@@ -36,6 +36,7 @@ import { Route as ApiPublicCredentialsRouteImport } from './routes/api/public/cr
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
+import { Route as ApiPublicHooksScraperWatchdogRouteImport } from './routes/api/public/hooks/scraper-watchdog'
 
 const UnsubscribeRoute = UnsubscribeRouteImport.update({
   id: '/unsubscribe',
@@ -175,6 +176,12 @@ const LovableEmailQueueProcessRoute =
     path: '/lovable/email/queue/process',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksScraperWatchdogRoute =
+  ApiPublicHooksScraperWatchdogRouteImport.update({
+    id: '/api/public/hooks/scraper-watchdog',
+    path: '/api/public/hooks/scraper-watchdog',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -201,6 +208,7 @@ export interface FileRoutesByFullPath {
   '/api/public/credentials': typeof ApiPublicCredentialsRoute
   '/api/public/slots': typeof ApiPublicSlotsRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/hooks/scraper-watchdog': typeof ApiPublicHooksScraperWatchdogRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
@@ -229,6 +237,7 @@ export interface FileRoutesByTo {
   '/api/public/credentials': typeof ApiPublicCredentialsRoute
   '/api/public/slots': typeof ApiPublicSlotsRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/hooks/scraper-watchdog': typeof ApiPublicHooksScraperWatchdogRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
@@ -259,6 +268,7 @@ export interface FileRoutesById {
   '/api/public/credentials': typeof ApiPublicCredentialsRoute
   '/api/public/slots': typeof ApiPublicSlotsRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/hooks/scraper-watchdog': typeof ApiPublicHooksScraperWatchdogRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
@@ -290,6 +300,7 @@ export interface FileRouteTypes {
     | '/api/public/credentials'
     | '/api/public/slots'
     | '/lovable/email/suppression'
+    | '/api/public/hooks/scraper-watchdog'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
@@ -318,6 +329,7 @@ export interface FileRouteTypes {
     | '/api/public/credentials'
     | '/api/public/slots'
     | '/lovable/email/suppression'
+    | '/api/public/hooks/scraper-watchdog'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
@@ -347,6 +359,7 @@ export interface FileRouteTypes {
     | '/api/public/credentials'
     | '/api/public/slots'
     | '/lovable/email/suppression'
+    | '/api/public/hooks/scraper-watchdog'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
@@ -371,6 +384,7 @@ export interface RootRouteChildren {
   ApiPublicCredentialsRoute: typeof ApiPublicCredentialsRoute
   ApiPublicSlotsRoute: typeof ApiPublicSlotsRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
+  ApiPublicHooksScraperWatchdogRoute: typeof ApiPublicHooksScraperWatchdogRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
   LovableEmailTransactionalSendRoute: typeof LovableEmailTransactionalSendRoute
@@ -567,6 +581,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/scraper-watchdog': {
+      id: '/api/public/hooks/scraper-watchdog'
+      path: '/api/public/hooks/scraper-watchdog'
+      fullPath: '/api/public/hooks/scraper-watchdog'
+      preLoaderRoute: typeof ApiPublicHooksScraperWatchdogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -611,6 +632,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicCredentialsRoute: ApiPublicCredentialsRoute,
   ApiPublicSlotsRoute: ApiPublicSlotsRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
+  ApiPublicHooksScraperWatchdogRoute: ApiPublicHooksScraperWatchdogRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
   LovableEmailTransactionalSendRoute: LovableEmailTransactionalSendRoute,
