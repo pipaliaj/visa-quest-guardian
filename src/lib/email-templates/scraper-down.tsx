@@ -18,13 +18,13 @@ const ScraperDownEmail = ({
 }: ScraperDownProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Scraper {scraperName} has been silent for {minutesSilent} minutes</Preview>
+    <Preview>{`Scraper ${scraperName} has been silent for ${minutesSilent} minutes`}</Preview>
     <Body style={main}>
       <Container style={container}>
         <Heading style={h1}>⚠️ Scraper offline</Heading>
         <Section>
           <Text style={text}><strong>Name:</strong> {scraperName}</Text>
-          <Text style={text}><strong>Silent for:</strong> {minutesSilent} minutes</Text>
+          <Text style={text}><strong>Silent for:</strong> {String(minutesSilent)} minutes</Text>
           <Text style={text}><strong>Last heartbeat:</strong> {lastHeartbeatAt ?? 'never'}</Text>
           <Text style={text}><strong>Last slot posted:</strong> {lastSlotAt ?? 'never'}</Text>
           <Text style={text}>Check the VPS: <code>sudo journalctl -u slot-scraper -f</code></Text>
