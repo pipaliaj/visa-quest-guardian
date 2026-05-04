@@ -72,9 +72,11 @@ export async function fetchCredentials({ centreId, provider }) {
  * @param {object} opts
  * @param {string} opts.provider     - 'tls' | 'vfs' | 'bls'
  * @param {string} opts.targetsFile  - e.g. 'targets-tls.json'
- * @param {(page: import('playwright').Page, target: object) => Promise<Array<{slot_date: string, slot_time: string|null}>>} opts.extractSlots
+ * @param {(page: import('playwright').Page, target: object, ctx: { credential: ({id,label,username,password,notes}|null) }) => Promise<Array<{slot_date: string, slot_time: string|null}>>} opts.extractSlots
+ * @param {(page: import('playwright').Page, target: object, credential: {username:string,password:string,notes:string}) => Promise<void>} [opts.login]
+ *   Optional provider-specific login routine. Called once per target when credentials exist.
  */
-export async function runScraper({ provider, targetsFile, extractSlots }) {
+export async function runScraper({ provider, targetsFile, extractSlots, login }) {
   if (!WEBHOOK_URL || !SCRAPER_KEY) {
     console.error('Missing WEBHOOK_URL or SCRAPER_KEY in env');
     process.exit(1);
@@ -101,9 +103,32 @@ export async function runScraper({ provider, targetsFile, extractSlots }) {
     const page = await ctx.newPage();
     try {
       console.log(`[${provider}][poll] ${target.label}`);
+
+      // Pull a credential for this centre+provider from the vault, if any.
+      let credential = null;
+      try {
+        const creds = await fetchCredentials({ centreId: target.centre_id, provider });
+        if (creds.length > 0) {
+          credential = creds[0];
+          console.log(`[${provider}][creds] using "${credential.label}" for ${target.label}`);
+        }
+      } catch (e) {
+        console.error(`[${provider}][creds] fetch failed:`, e.message);
+      }
+
       await page.goto(target.url, { waitUntil: 'networkidle', timeout: 45_000 });
       await page.waitForTimeout(2_000);
-      const slots = await extractSlots(page, target);
+
+      if (credential && typeof login === 'function') {
+        try {
+          await login(page, target, credential);
+          console.log(`[${provider}][login] ${target.label}: logged in`);
+        } catch (e) {
+          console.error(`[${provider}][login] ${target.label} failed:`, e.message);
+        }
+      }
+
+      const slots = await extractSlots(page, target, { credential });
       console.log(`[${provider}][poll] ${target.label}: ${slots.length} slots`);
       for (const s of slots) {
         const r = await postSignedJSON({
