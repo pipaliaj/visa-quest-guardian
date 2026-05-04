@@ -26,6 +26,7 @@ import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
 import { Route as DashboardTrackersRouteImport } from './routes/dashboard.trackers'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
 import { Route as DashboardBillingRouteImport } from './routes/dashboard.billing'
+import { Route as DashboardAdminRouteImport } from './routes/dashboard.admin'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -112,6 +113,11 @@ const DashboardBillingRoute = DashboardBillingRouteImport.update({
   path: '/billing',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardAdminRoute = DashboardAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => DashboardRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -125,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof PricingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/billing': typeof DashboardBillingRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/trackers': typeof DashboardTrackersRoute
@@ -143,6 +150,7 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/billing': typeof DashboardBillingRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/trackers': typeof DashboardTrackersRoute
@@ -163,6 +171,7 @@ export interface FileRoutesById {
   '/pricing': typeof PricingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/billing': typeof DashboardBillingRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/trackers': typeof DashboardTrackersRoute
@@ -184,6 +193,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/reset-password'
     | '/signup'
+    | '/dashboard/admin'
     | '/dashboard/billing'
     | '/dashboard/settings'
     | '/dashboard/trackers'
@@ -202,6 +212,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/reset-password'
     | '/signup'
+    | '/dashboard/admin'
     | '/dashboard/billing'
     | '/dashboard/settings'
     | '/dashboard/trackers'
@@ -221,6 +232,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/reset-password'
     | '/signup'
+    | '/dashboard/admin'
     | '/dashboard/billing'
     | '/dashboard/settings'
     | '/dashboard/trackers'
@@ -366,10 +378,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardBillingRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/admin': {
+      id: '/dashboard/admin'
+      path: '/admin'
+      fullPath: '/dashboard/admin'
+      preLoaderRoute: typeof DashboardAdminRouteImport
+      parentRoute: typeof DashboardRoute
+    }
   }
 }
 
 interface DashboardRouteChildren {
+  DashboardAdminRoute: typeof DashboardAdminRoute
   DashboardBillingRoute: typeof DashboardBillingRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardTrackersRoute: typeof DashboardTrackersRoute
@@ -377,6 +397,7 @@ interface DashboardRouteChildren {
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardAdminRoute: DashboardAdminRoute,
   DashboardBillingRoute: DashboardBillingRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardTrackersRoute: DashboardTrackersRoute,
@@ -405,3 +426,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
