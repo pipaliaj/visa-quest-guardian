@@ -35,7 +35,7 @@ export const injectTestSlot = createServerFn({ method: "POST" })
         category_id: data.category_id,
         slot_date: data.slot_date,
         slot_time: data.slot_time || null,
-        source: "manual",
+        source: "scraper",
         raw_url: null,
       })
       .select("id")
