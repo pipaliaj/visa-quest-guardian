@@ -1,15 +1,13 @@
-## Status: Tracker pipeline shipped
+## Status
 
-- [x] Migration: dedup index, key_prefix index, seed categories, match_trackers_for_slot fn
-- [x] Trackers UI (create, list, toggle, delete)
-- [x] Settings (channel toggles, profile)
-- [x] Admin page (bootstrap, inject test slot, scraper key issue/list)
-- [x] Public scraper webhook /api/public/slots (HMAC + dedup + heartbeat)
-- [x] Fanout helper (logs queued notifications)
-- [x] Overview (live stats, recent slots, admin link)
+- [x] Trackers, settings, admin, webhook, fanout (logged-only)
+- [x] Email infra set up on notify.jaypipalia.com
+- [x] Slot-alert React Email template
+- [x] Fanout now renders + enqueues real emails per matching user
+- [x] /unsubscribe page wired to handle-email-unsubscribe route
 
 ## Pending
-- Email domain setup → then wire actual email send in fanoutSlotEvent
+- DNS verification for notify.jaypipalia.com (monitor in Cloud → Emails)
 - Web push (VAPID + service worker)
 - Stripe billing + paywall
 - Realtime slot feed on overview
