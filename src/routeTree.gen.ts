@@ -27,6 +27,7 @@ import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as DashboardTrackersRouteImport } from './routes/dashboard.trackers'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
+import { Route as DashboardCredentialsRouteImport } from './routes/dashboard.credentials'
 import { Route as DashboardBillingRouteImport } from './routes/dashboard.billing'
 import { Route as DashboardAdminRouteImport } from './routes/dashboard.admin'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
@@ -126,6 +127,11 @@ const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardCredentialsRoute = DashboardCredentialsRouteImport.update({
+  id: '/credentials',
+  path: '/credentials',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardBillingRoute = DashboardBillingRouteImport.update({
   id: '/billing',
   path: '/billing',
@@ -185,6 +191,7 @@ export interface FileRoutesByFullPath {
   '/unsubscribe': typeof UnsubscribeRoute
   '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/billing': typeof DashboardBillingRoute
+  '/dashboard/credentials': typeof DashboardCredentialsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/trackers': typeof DashboardTrackersRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
@@ -212,6 +219,7 @@ export interface FileRoutesByTo {
   '/unsubscribe': typeof UnsubscribeRoute
   '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/billing': typeof DashboardBillingRoute
+  '/dashboard/credentials': typeof DashboardCredentialsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/trackers': typeof DashboardTrackersRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
@@ -241,6 +249,7 @@ export interface FileRoutesById {
   '/unsubscribe': typeof UnsubscribeRoute
   '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/billing': typeof DashboardBillingRoute
+  '/dashboard/credentials': typeof DashboardCredentialsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/trackers': typeof DashboardTrackersRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
@@ -271,6 +280,7 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/dashboard/admin'
     | '/dashboard/billing'
+    | '/dashboard/credentials'
     | '/dashboard/settings'
     | '/dashboard/trackers'
     | '/email/unsubscribe'
@@ -298,6 +308,7 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/dashboard/admin'
     | '/dashboard/billing'
+    | '/dashboard/credentials'
     | '/dashboard/settings'
     | '/dashboard/trackers'
     | '/email/unsubscribe'
@@ -326,6 +337,7 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/dashboard/admin'
     | '/dashboard/billing'
+    | '/dashboard/credentials'
     | '/dashboard/settings'
     | '/dashboard/trackers'
     | '/email/unsubscribe'
@@ -492,6 +504,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardSettingsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/credentials': {
+      id: '/dashboard/credentials'
+      path: '/credentials'
+      fullPath: '/dashboard/credentials'
+      preLoaderRoute: typeof DashboardCredentialsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/billing': {
       id: '/dashboard/billing'
       path: '/billing'
@@ -554,6 +573,7 @@ declare module '@tanstack/react-router' {
 interface DashboardRouteChildren {
   DashboardAdminRoute: typeof DashboardAdminRoute
   DashboardBillingRoute: typeof DashboardBillingRoute
+  DashboardCredentialsRoute: typeof DashboardCredentialsRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardTrackersRoute: typeof DashboardTrackersRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
@@ -562,6 +582,7 @@ interface DashboardRouteChildren {
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAdminRoute: DashboardAdminRoute,
   DashboardBillingRoute: DashboardBillingRoute,
+  DashboardCredentialsRoute: DashboardCredentialsRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardTrackersRoute: DashboardTrackersRoute,
   DashboardIndexRoute: DashboardIndexRoute,

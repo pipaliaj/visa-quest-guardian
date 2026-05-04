@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { ShieldCheck, Plus, KeyRound } from "lucide-react";
+import { ShieldCheck, Plus, KeyRound, Lock } from "lucide-react";
 import { injectTestSlot, createScraperKey, listScraperKeys } from "@/server/admin.functions";
 import { useServerFn } from "@tanstack/react-start";
 
@@ -103,6 +103,16 @@ function AdminPage() {
         <h1 className="text-3xl font-semibold tracking-tight">Admin</h1>
         <p className="mt-1 text-sm text-muted-foreground">Inject test slots and manage scraper keys.</p>
       </div>
+
+      <Card className="p-6">
+        <h2 className="mb-2 flex items-center gap-2 text-lg font-medium"><Lock className="h-4 w-4" /> Scraper credentials</h2>
+        <p className="text-sm text-muted-foreground">
+          Store encrypted per-centre logins for VFS, BLS, etc. The scraper fetches them at runtime via its signed key.
+        </p>
+        <Button asChild className="mt-3" variant="outline">
+          <Link to="/dashboard/credentials">Manage credentials</Link>
+        </Button>
+      </Card>
 
       <Card className="p-6">
         <h2 className="mb-4 flex items-center gap-2 text-lg font-medium"><Plus className="h-4 w-4" /> Inject test slot</h2>
