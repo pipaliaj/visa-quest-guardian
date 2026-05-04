@@ -198,6 +198,7 @@ export type Database = {
           created_at: string
           id: string
           key_hash: string
+          key_prefix: string | null
           last_heartbeat_at: string | null
           last_slot_at: string | null
           name: string
@@ -207,6 +208,7 @@ export type Database = {
           created_at?: string
           id?: string
           key_hash: string
+          key_prefix?: string | null
           last_heartbeat_at?: string | null
           last_slot_at?: string | null
           name: string
@@ -216,6 +218,7 @@ export type Database = {
           created_at?: string
           id?: string
           key_hash?: string
+          key_prefix?: string | null
           last_heartbeat_at?: string | null
           last_slot_at?: string | null
           name?: string
@@ -473,12 +476,35 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      bootstrap_admin: { Args: never; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      heartbeat_scraper: { Args: { _scraper_id: string }; Returns: undefined }
+      ingest_slot_event: {
+        Args: {
+          _category_id: string
+          _centre_id: string
+          _raw_url: string
+          _scraper_id: string
+          _slot_date: string
+          _slot_time: string
+        }
+        Returns: string
+      }
+      log_notification: {
+        Args: {
+          _channel: Database["public"]["Enums"]["notification_channel"]
+          _error: string
+          _slot_event_id: string
+          _status: string
+          _user_id: string
+        }
+        Returns: string
       }
     }
     Enums: {

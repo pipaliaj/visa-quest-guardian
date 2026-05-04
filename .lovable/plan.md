@@ -1,149 +1,71 @@
-# Schengen Visa Slot Tracker (Ireland)
+## Next build phase: Trackers + Slot ingestion + Email alerts
 
-A subscription web app that alerts clients the instant a Schengen visa appointment slot opens at their preferred country's application centre. Pay-per-country billing, multi-channel instant alerts.
+Foundation (auth, dashboard shell, marketing) is done. This phase makes the product actually *do something* end-to-end: a user can create a tracker, an admin (or the future scraper) can inject a slot, and matching users get an email instantly.
 
-## Launch scope
+### 1. Trackers CRUD UI (`/dashboard/trackers`)
 
-**Countries (top 5 demand from Ireland):**
-- France — VFS Global Dublin
-- Germany — VFS Global Dublin
-- Spain — BLS International Dublin
-- Italy — VFS Global Dublin
-- Netherlands — VFS Global Dublin
+- "New tracker" dialog: cascading selects → Country → Centre (filtered by country) → Visa category → optional alert window (days of week + start/end hour).
+- Tracker list: card per tracker showing country flag, centre, category, last detected slot, active toggle, delete button.
+- Server functions (`src/server/trackers.functions.ts`) for list/create/update/delete using `requireSupabaseAuth` middleware (RLS already enforces user ownership).
+- Reference data loader (countries, centres, categories) — public read, fetched via a single server fn.
 
-(Easy to add more once the framework is proven.)
+### 2. Admin panel (`/dashboard/admin`, admin role only)
 
-## Architecture
+- Visible only when `has_role(uid, 'admin')` — gate in `beforeLoad` via a server fn.
+- "Inject test slot" form: pick centre + category + date/time → inserts into `slot_events` and triggers fanout. Lets us QA the whole pipeline before scrapers exist.
+- Scraper keys table: create / revoke / view last heartbeat.
+- "Make me admin" one-shot helper (checks if zero admins exist, then grants caller — safe bootstrap).
 
-Two pieces — only piece 1 is built inside Lovable:
+### 3. Slot ingestion webhook (`/api/public/slots`)
 
-```text
- ┌──────────────────────────┐        slot events (webhook)        ┌──────────────────────────┐
- │  LOVABLE WEB APP         │ ◄─────────────────────────────────  │  EXTERNAL SCRAPER FLEET  │
- │  (this project)          │                                     │  (you deploy on VPS)     │
- │  - Marketing site        │  ─────  health/heartbeat  ───────►  │  - Playwright workers    │
- │  - Auth + dashboard      │                                     │  - Residential proxies   │
- │  - Subscriptions/billing │                                     │  - CAPTCHA solver        │
- │  - Notifications fanout  │                                     │  - One worker per site   │
- └──────────────────────────┘                                     └──────────────────────────┘
-```
+- Server route (TanStack file route, NOT Supabase edge function).
+- HMAC-SHA256 verification using header `x-scraper-signature` against per-key secret stored hashed in `scraper_keys`.
+- Zod-validated payload: `{ key_id, centre_id, category_id, slot_date, slot_time?, raw_url? }`.
+- Inserts into `slot_events` (admin client), updates scraper `last_heartbeat_at` + `last_slot_at`, then enqueues fanout.
+- Heartbeat-only mode: same endpoint accepts `{ heartbeat: true }` to update liveness without a slot.
+- Dedup: skip insert if same `(centre_id, category_id, slot_date, slot_time)` seen in last 60s.
 
-**Why split?** Lovable's runtime (Cloudflare Workers) cannot run Playwright/headless browsers. Scraping VFS/BLS/TLS reliably needs a real Node host with proxies. We build the brain in Lovable and ship a separate scraper-worker codebase you deploy on a cheap VPS (Hetzner / Railway / Fly.io, ~€10–€30/mo + proxies).
+### 4. Fanout engine + email channel (Resend connector)
 
-## What gets built in Lovable
+- After a slot is inserted, query active trackers matching `centre_id + category_id`, intersect with users whose alert window covers `now()` in Europe/Dublin and whose subscription for that country is active *or* trialing (we'll relax during pre-billing dev).
+- For each match → send email via Resend connector (gateway pattern), log to `notifications_log`.
+- Dedup per user: skip if a notification for the same `slot_event_id + user_id + channel` already exists.
+- Resend connector: prompt user to connect it before this step ships.
 
-### 1. Public marketing site
-- Landing page (hero, how-it-works, supported countries, pricing, FAQ, testimonials placeholder)
-- Separate routes: `/`, `/how-it-works`, `/pricing`, `/countries`, `/faq`, `/contact`, `/legal/terms`, `/legal/privacy`
-- Clear disclaimer: "We are not affiliated with VFS, BLS, TLS, VisaMetric or any consulate."
+### 5. Live status + recent slots on dashboard
 
-### 2. Auth & user accounts
-- Email/password + Google sign-in (Lovable Cloud auth)
-- Profile: name, phone (E.164), Telegram handle, notification channel preferences
+- Overview page: replace placeholders with real stats (active trackers, last 24h detected slots, scraper health green/amber/red from `last_heartbeat_at`).
+- Per-tracker recent slots feed (last 10) with relative timestamps.
+- Realtime subscription on `slot_events` so new detections pop into the UI without refresh + sonner toast + optional sound.
 
-### 3. Tracker dashboard
-- "My trackers" list — each row = country + visa category + centre
-- Add tracker flow: pick country → category (short-stay/long-stay/work/study) → centre → confirm subscription
-- Per-tracker controls: pause, edit alert window (e.g. only weekdays 9–18), delete
-- Recent slot history feed per tracker (last 30 detections)
-- Live "system status" panel showing each scraper's last heartbeat (green/amber/red)
+### Technical details
 
-### 4. Multi-channel instant alerts
-When the scraper posts a slot event, fan out to every subscribed user via their chosen channels:
-- **Web push** (browser notifications, works while tab closed) — Service Worker + VAPID
-- **Email** — Resend connector
-- **SMS** — Twilio connector (E.164 numbers only; cost-controlled, premium tier only)
-- **Telegram** — Telegram bot connector (user links account via `/start <token>`)
-- **WhatsApp** — Twilio WhatsApp Business API (premium tier)
-- In-app toast + sound when dashboard is open (polling every 10s as fallback)
-- Deduplication: same slot signature within 60s sent only once per user
+**Files to add**
+- `src/server/trackers.functions.ts`, `src/server/reference.functions.ts`, `src/server/admin.functions.ts`, `src/server/slots.server.ts` (fanout helper).
+- `src/routes/api/public/slots.ts` (webhook).
+- `src/routes/dashboard.admin.tsx`, dialog components in `src/components/trackers/`.
+- `src/lib/hmac.ts` (sign/verify helpers using Node `crypto`).
 
-### 5. Pay-per-country billing
-Stripe (Lovable's built-in payments):
-- Each country = separate monthly subscription (e.g. €19/mo per country)
-- Bundle discount: 3+ countries → 20% off, 5 countries → 30% off
-- Premium add-on: SMS + WhatsApp alerts (€9/mo flat)
-- 24-hour free trial on first country
-- Self-serve cancel from dashboard
+**DB migration**
+- Add unique index on `slot_events (centre_id, category_id, slot_date, slot_time, detected_at)` for dedup queries.
+- Add `scraper_keys.key_prefix` (text) so the webhook can look up the row before constant-time comparing the hash.
+- Insert seed `visa_categories` rows if missing (short-stay, long-stay, work, study).
+- Add INSERT policy on `notifications_log` for service role (already implicit, but explicit is clearer); add admin INSERT on `slot_events` (exists) — plus a SECURITY DEFINER RPC `ingest_slot_event` so the webhook stays simple.
 
-### 6. Slot ingestion webhook (server route)
-- `POST /api/public/slots` — HMAC-signed endpoint the external scrapers call
-- Validates signature, parses payload `{country, centre, category, slot_date, slot_time, detected_at, raw_url}`
-- Inserts into `slot_events`, triggers fanout to matching active trackers
-- Rate-limit per scraper key
+**Secrets needed**
+- Resend connector (I'll prompt to connect).
+- `SCRAPER_WEBHOOK_PEPPER` — added via add_secret, used to hash scraper keys at rest.
 
-### 7. Admin panel (you only)
-- View all users, subscriptions, MRR
-- Manually inject a test slot event (for QA)
-- Per-scraper API keys: create / revoke / view usage
-- Block/refund users
-- Toggle a country's tracker availability (kill switch if a scraper is down >1h)
+### Out of scope this phase (next phases)
+- Web push (VAPID + service worker)
+- Stripe pay-per-country billing + paywall
+- SMS / Telegram / WhatsApp channels
+- Crowd-source reports moderation UI
 
-### 8. Crowd-source fallback (built-in but optional)
-- Logged-in users can report a slot they saw (form: country, centre, screenshot, date/time)
-- Auto-flagged as "user-reported" in alerts (lower trust badge)
-- Admin one-click promote to verified
-
-## What you build outside Lovable (we'll provide a starter repo spec in the plan, but not the code)
-
-A separate Node + Playwright worker repo. One worker process per site (vfs-france, vfs-germany, bls-spain, …). Each worker:
-1. Boots Playwright with a residential proxy (Bright Data / Smartproxy)
-2. Logs in with a dummy account where required
-3. Polls the calendar endpoint every 30–120s with jittered timing
-4. Solves CAPTCHA via 2Captcha when triggered
-5. Diffs available dates vs last snapshot
-6. POSTs new openings to the Lovable webhook with HMAC signature
-7. Sends a heartbeat every 60s
-
-You'll need: a VPS (~€10/mo), residential proxies (~€50–€100/mo at low volume), 2Captcha credits (~€10/mo), and ongoing maintenance time when sites change their HTML.
-
-## Data model (Lovable Cloud / Postgres)
-
-- `profiles` — user details, notification channel preferences
-- `user_roles` — admin role (separate table per security best practices)
-- `countries` — id, name, code, active flag
-- `centres` — id, country_id, city, provider (vfs/bls/tls/visametric), provider_url
-- `visa_categories` — short-stay, long-stay, work, study
-- `trackers` — user_id, centre_id, category_id, active, alert_window_json, created_at
-- `subscriptions` — user_id, country_id, stripe_subscription_id, status, current_period_end
-- `slot_events` — centre_id, category_id, slot_date, slot_time, detected_at, source (scraper/user), scraper_id
-- `notifications_log` — user_id, slot_event_id, channel, sent_at, status
-- `scraper_keys` — name, hashed_key, last_heartbeat_at, last_slot_at, active
-- `push_subscriptions` — user_id, endpoint, p256dh, auth (Web Push)
-- `slot_reports` — user submissions awaiting verification
-
-All tables RLS-protected; users only read their own trackers/subscriptions/notifications.
-
-## UX & visual direction
-
-Trustworthy, calm, fintech-adjacent (not flashy). Off-white background, deep navy primary, single accent (emerald for "slot open"). Inter font. Generous whitespace. Real-time elements (status dots, last-seen timestamps) are first-class — users need to feel the system is alive and watching.
-
-## Out of scope for v1
-
-- Auto-booking slots on user's behalf (very high legal risk — different conversation)
-- Mobile native apps (PWA + push covers it)
-- Refund automation (manual via Stripe dashboard)
-- Multi-currency (EUR only)
-
-## What I need from you before/after build
-
-- Stripe payments connector (set up in-app)
-- Resend connector for email
-- Twilio connector for SMS/WhatsApp
-- Telegram bot token
-- Web Push VAPID keys (I'll generate a script)
-- A scraper webhook secret (I'll generate)
-- A separate decision on whether you'll run the scraper VPS yourself or hire someone
-
-## Build order (so you can see progress fast)
-
-1. Marketing site + auth + dashboard shell
-2. Trackers CRUD + slot_events table + admin "inject test slot" button
-3. Webhook endpoint + fanout engine + email channel (Resend)
-4. Web push + in-app toast
-5. Stripe pay-per-country billing + paywall on tracker creation
-6. SMS / Telegram / WhatsApp channels
-7. Crowd-source reports + admin moderation
-8. Polish, legal pages, status page
-
-After approval, I'll start at step 1.
+### After approval, build order
+1. Migration + seed categories.
+2. Reference + tracker server fns and Trackers UI.
+3. Admin route + inject-slot form + bootstrap-admin helper.
+4. Webhook route + HMAC + fanout helper.
+5. Connect Resend + wire email channel.
+6. Overview stats + realtime feed.
