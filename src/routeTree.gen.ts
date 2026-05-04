@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
+import { Route as FaqRouteImport } from './routes/faq'
 import { Route as CountriesRouteImport } from './routes/countries'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -22,6 +23,11 @@ const PricingRoute = PricingRouteImport.update({
 const HowItWorksRoute = HowItWorksRouteImport.update({
   id: '/how-it-works',
   path: '/how-it-works',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CountriesRoute = CountriesRouteImport.update({
@@ -38,12 +44,14 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/countries': typeof CountriesRoute
+  '/faq': typeof FaqRoute
   '/how-it-works': typeof HowItWorksRoute
   '/pricing': typeof PricingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/countries': typeof CountriesRoute
+  '/faq': typeof FaqRoute
   '/how-it-works': typeof HowItWorksRoute
   '/pricing': typeof PricingRoute
 }
@@ -51,20 +59,22 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/countries': typeof CountriesRoute
+  '/faq': typeof FaqRoute
   '/how-it-works': typeof HowItWorksRoute
   '/pricing': typeof PricingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/countries' | '/how-it-works' | '/pricing'
+  fullPaths: '/' | '/countries' | '/faq' | '/how-it-works' | '/pricing'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/countries' | '/how-it-works' | '/pricing'
-  id: '__root__' | '/' | '/countries' | '/how-it-works' | '/pricing'
+  to: '/' | '/countries' | '/faq' | '/how-it-works' | '/pricing'
+  id: '__root__' | '/' | '/countries' | '/faq' | '/how-it-works' | '/pricing'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CountriesRoute: typeof CountriesRoute
+  FaqRoute: typeof FaqRoute
   HowItWorksRoute: typeof HowItWorksRoute
   PricingRoute: typeof PricingRoute
 }
@@ -83,6 +93,13 @@ declare module '@tanstack/react-router' {
       path: '/how-it-works'
       fullPath: '/how-it-works'
       preLoaderRoute: typeof HowItWorksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/countries': {
@@ -105,6 +122,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CountriesRoute: CountriesRoute,
+  FaqRoute: FaqRoute,
   HowItWorksRoute: HowItWorksRoute,
   PricingRoute: PricingRoute,
 }
