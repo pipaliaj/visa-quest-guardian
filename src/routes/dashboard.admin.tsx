@@ -37,6 +37,12 @@ function AdminPage() {
   const create = useServerFn(createScraperKey);
   const list = useServerFn(listScraperKeys);
 
+  const getAuthHeaders = async () => {
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    return token ? { authorization: `Bearer ${token}` } : undefined;
+  };
+
   useEffect(() => {
     (async () => {
       const { data: u } = await supabase.auth.getUser();
@@ -62,7 +68,7 @@ function AdminPage() {
       setCentres((ce.data ?? []) as Centre[]);
       setCats((ca.data ?? []) as Category[]);
       try {
-        const ks = await list();
+        const ks = await list({ headers: await getAuthHeaders() });
         setKeys(ks.keys as ScraperKey[]);
       } catch {}
     })();
@@ -81,7 +87,7 @@ function AdminPage() {
   const onInject = async () => {
     if (!centreId || !catId || !date) return toast.error("Centre, category, date required");
     try {
-      const r = await inject({ data: { centre_id: centreId, category_id: catId, slot_date: date, slot_time: time || null } });
+      const r = await inject({ data: { centre_id: centreId, category_id: catId, slot_date: date, slot_time: time || null }, headers: await getAuthHeaders() });
       toast.success(`Slot injected. Notified ${r.notified} user(s).`);
     } catch (e: any) { toast.error(e?.message ?? "Failed"); }
   };
@@ -89,10 +95,11 @@ function AdminPage() {
   const onCreateKey = async () => {
     if (!keyName) return toast.error("Name required");
     try {
-      const r = await create({ data: { name: keyName } });
+      const headers = await getAuthHeaders();
+      const r = await create({ data: { name: keyName }, headers });
       setNewKey(r.secret);
       setKeyName("");
-      const ks = await list();
+      const ks = await list({ headers });
       setKeys(ks.keys as ScraperKey[]);
     } catch (e: any) { toast.error(e?.message ?? "Failed"); }
   };
