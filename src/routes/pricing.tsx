@@ -34,11 +34,11 @@ const TIERS = [
     highlight: true,
   },
   {
-    name: "All 5 + Premium",
-    price: "€75",
+    name: "All 6 + Premium",
+    price: "€80",
     period: "/ month",
-    desc: "All 5 countries with 30% off, plus SMS and WhatsApp alerts.",
-    features: ["All countries", "SMS alerts", "WhatsApp alerts", "Priority support"],
+    desc: "All 6 live countries with 30% off, plus SMS and WhatsApp alerts.",
+    features: ["All live countries", "SMS alerts", "WhatsApp alerts", "Priority support"],
     cta: "Go premium",
   },
 ];

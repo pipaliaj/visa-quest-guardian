@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Plus, Trash2, Radar } from "lucide-react";
 
-type Country = { id: string; name: string; code: string; flag_emoji: string | null };
+type Country = { id: string; name: string; code: string; flag_emoji: string | null; monitoring_status?: "live" | "coming_soon" };
 type Centre = { id: string; city: string; country_id: string; provider: string };
 type Category = { id: string; code: string; name: string };
 type Tracker = {
@@ -36,7 +36,7 @@ function TrackersPage() {
 
   const load = async () => {
     const [c, ce, cat, t] = await Promise.all([
-      supabase.from("countries").select("id,name,code,flag_emoji").eq("active", true).order("name"),
+      supabase.from("countries").select("id,name,code,flag_emoji,monitoring_status").eq("active", true).eq("monitoring_status", "live").order("name"),
       supabase.from("centres").select("id,city,country_id,provider").eq("active", true).order("city"),
       supabase.from("visa_categories").select("id,code,name").order("name"),
       supabase.from("trackers").select("id,active,centre_id,category_id,centres(city,country_id),visa_categories(name)").order("created_at", { ascending: false }),
