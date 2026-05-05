@@ -93,6 +93,9 @@ function Pricing() {
           ))}
         </div>
         <p className="mt-10 text-center text-xs text-muted-foreground">Prices in EUR · billed monthly · 7-day free trial · cancel anytime from the dashboard</p>
+        <p className="mx-auto mt-4 max-w-2xl text-center text-xs text-muted-foreground">
+          SchengenSlot is an independent notification service and is <strong>not affiliated with, endorsed by, or operated by</strong> VFS Global, BLS International, TLScontact, VisaMetric, or any embassy or consulate. We do not book appointments on your behalf — we simply alert you when slots become available on the official booking websites.
+        </p>
       </section>
     </SiteLayout>
   );
