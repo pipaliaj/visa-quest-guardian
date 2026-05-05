@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, ArrowRight } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/pricing")({
   head: () => ({
@@ -48,6 +49,15 @@ const TIERS = [
 
 function Pricing() {
   const navigate = useNavigate();
+  const onChoose = async (plan: string) => {
+    const { data } = await supabase.auth.getSession();
+    if (data.session) {
+      navigate({ to: "/dashboard/billing", search: { plan } as any });
+    } else {
+      sessionStorage.setItem("pending_plan", plan);
+      navigate({ to: "/signup" });
+    }
+  };
   return (
     <SiteLayout>
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
@@ -75,7 +85,7 @@ function Pricing() {
               <Button
                 className="mt-8"
                 variant={t.highlight ? "default" : "outline"}
-                onClick={() => navigate({ to: "/signup", search: { plan: t.plan } as any })}
+                onClick={() => onChoose(t.plan)}
               >
                 {t.cta} <ArrowRight className="ml-1.5 h-4 w-4" />
               </Button>
