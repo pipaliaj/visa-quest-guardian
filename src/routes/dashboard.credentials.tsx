@@ -16,7 +16,7 @@ export const Route = createFileRoute("/dashboard/credentials")({
   component: CredentialsPage,
 });
 
-type Centre = { id: string; city: string };
+type Centre = { id: string; city: string; countries: { name: string; code: string } | null };
 type Cred = {
   id: string; centre_id: string; provider: string; label: string; active: boolean;
   updated_at: string; centres: { city: string } | null;
@@ -56,7 +56,10 @@ function CredentialsPage() {
       setIsAdmin(!!role);
       setChecking(false);
       if (!role) return;
-      const ce = await supabase.from("centres").select("id,city").order("city");
+      const ce = await supabase
+        .from("centres")
+        .select("id,city,countries(name,code)")
+        .order("city");
       setCentres((ce.data ?? []) as Centre[]);
       try {
         const r = await list({ headers: await getAuthHeaders() });
@@ -120,7 +123,11 @@ function CredentialsPage() {
             <Label>Centre</Label>
             <Select value={centreId} onValueChange={setCentreId}>
               <SelectTrigger><SelectValue placeholder="Centre" /></SelectTrigger>
-              <SelectContent>{centres.map((c) => <SelectItem key={c.id} value={c.id}>{c.city}</SelectItem>)}</SelectContent>
+              <SelectContent>{centres.map((c) => (
+                <SelectItem key={c.id} value={c.id}>
+                  {c.city} → {c.countries?.name ?? "?"}
+                </SelectItem>
+              ))}</SelectContent>
             </Select>
           </div>
           <div className="space-y-2">
