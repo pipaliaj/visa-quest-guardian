@@ -3,24 +3,24 @@
     "label": "Dublin -> France (Schengen short-stay)",
     "centre_id": "c3826056-98b4-4601-ae5d-cd1fcc039a1a",
     "category_id": "8641aa89-f8ff-46a4-bf3c-745a76c90585",
-    "url": "https://visa.vfsglobal.com/irl/en/fra/book-appointment"
+    "url": "https://visa.vfsglobal.com/irl/en/fra/login"
   },
   {
     "label": "Dublin -> Germany (Schengen short-stay)",
     "centre_id": "0836da83-e103-4c3e-ab2b-f708e08ea417",
     "category_id": "8641aa89-f8ff-46a4-bf3c-745a76c90585",
-    "url": "https://visa.vfsglobal.com/irl/en/deu/book-appointment"
+    "url": "https://visa.vfsglobal.com/irl/en/deu/login"
   },
   {
     "label": "Dublin -> Italy (Schengen short-stay)",
     "centre_id": "2ca2b289-264c-4ce5-bdce-d80e1ed67549",
     "category_id": "8641aa89-f8ff-46a4-bf3c-745a76c90585",
-    "url": "https://visa.vfsglobal.com/irl/en/ita/book-appointment"
+    "url": "https://visa.vfsglobal.com/irl/en/ita/login"
   },
   {
     "label": "Dublin -> Netherlands (Schengen short-stay)",
     "centre_id": "b7fcb984-83e6-4b27-b6fb-dd63fc94a623",
     "category_id": "8641aa89-f8ff-46a4-bf3c-745a76c90585",
-    "url": "https://visa.vfsglobal.com/irl/en/nld/book-appointment"
+    "url": "https://visa.vfsglobal.com/irl/en/nld/login"
   }
 ]
