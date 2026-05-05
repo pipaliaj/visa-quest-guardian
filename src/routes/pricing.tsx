@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -21,8 +21,9 @@ const TIERS = [
     price: "€19",
     period: "/ country / month",
     desc: "Track one country at one centre. Perfect if you only need a France or Spain appointment.",
-    features: ["Web push + email alerts", "Sub-minute detection", "24-hour free trial", "Cancel anytime"],
+    features: ["Web push + email alerts", "Sub-minute detection", "7-day free trial", "Cancel anytime"],
     cta: "Start trial",
+    plan: "single_country_monthly",
   },
   {
     name: "Bundle 3",
@@ -32,6 +33,7 @@ const TIERS = [
     features: ["Everything in Single", "20% off vs single", "Telegram alerts included"],
     cta: "Choose 3 countries",
     highlight: true,
+    plan: "bundle_3_monthly",
   },
   {
     name: "All 6 + Premium",
@@ -40,16 +42,18 @@ const TIERS = [
     desc: "All 6 live countries with 30% off, plus SMS and WhatsApp alerts.",
     features: ["All live countries", "SMS alerts", "WhatsApp alerts", "Priority support"],
     cta: "Go premium",
+    plan: "premium_all_monthly",
   },
 ];
 
 function Pricing() {
+  const navigate = useNavigate();
   return (
     <SiteLayout>
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h1 className="text-4xl font-bold tracking-tight">Pay only for what you track</h1>
-          <p className="mt-4 text-lg text-muted-foreground">€19/month per country. Bundle discounts kick in automatically.</p>
+          <p className="mt-4 text-lg text-muted-foreground">€19/month per country. 7-day free trial on all plans.</p>
         </div>
         <div className="mt-12 grid gap-6 lg:grid-cols-3">
           {TIERS.map((t) => (
@@ -68,13 +72,17 @@ function Pricing() {
                   </li>
                 ))}
               </ul>
-              <Button asChild className="mt-8" variant={t.highlight ? "default" : "outline"}>
-                <Link to="/signup">{t.cta} <ArrowRight className="ml-1.5 h-4 w-4" /></Link>
+              <Button
+                className="mt-8"
+                variant={t.highlight ? "default" : "outline"}
+                onClick={() => navigate({ to: "/signup", search: { plan: t.plan } as any })}
+              >
+                {t.cta} <ArrowRight className="ml-1.5 h-4 w-4" />
               </Button>
             </Card>
           ))}
         </div>
-        <p className="mt-10 text-center text-xs text-muted-foreground">Prices in EUR · billed monthly · 24-hour free trial on your first country · cancel anytime from the dashboard</p>
+        <p className="mt-10 text-center text-xs text-muted-foreground">Prices in EUR · billed monthly · 7-day free trial · cancel anytime from the dashboard</p>
       </section>
     </SiteLayout>
   );
