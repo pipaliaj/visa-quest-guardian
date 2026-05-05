@@ -21,18 +21,29 @@ const OTP_WAIT_SEC = Number(process.env.OTP_WAIT_SEC || '120');
  * Selectors are best-effort; tweak per the actual page once observed.
  */
 async function login(page, _target, credential) {
-  const emailSel = 'input[type="email"], input[name*="mail" i], input[id*="mail" i]';
-  const passSel  = 'input[type="password"], input[name*="pass" i], input[id*="pass" i]';
-  const submitSel = 'button[type="submit"], button:has-text("Sign in"), button:has-text("Login"), input[type="submit"]';
+  // VFS uses Angular Material; the email field is type="text" with formcontrolname="username"
+  const emailSel = '#email, input[formcontrolname="username"], input[type="email"], input[name*="mail" i]';
+  const passSel  = '#password, input[formcontrolname="password"], input[type="password"]';
+  const submitSel = 'button[type="submit"], button:has-text("Sign In"), button:has-text("Sign in"), button:has-text("Login")';
 
   // Dismiss cookie banner if present
-  const cookieBtn = await page.$('button:has-text("Accept"), button:has-text("Agree")');
-  if (cookieBtn) { try { await cookieBtn.click({ timeout: 2000 }); } catch {} }
+  for (const sel of [
+    'button:has-text("Accept All")',
+    'button:has-text("Accept all")',
+    'button:has-text("Accept")',
+    'button:has-text("Agree")',
+    '#onetrust-accept-btn-handler',
+  ]) {
+    const btn = await page.$(sel);
+    if (btn) { try { await btn.click({ timeout: 2000 }); break; } catch {} }
+  }
 
-  const email = await page.waitForSelector(emailSel, { timeout: 15000 });
+  const email = await page.waitForSelector(emailSel, { timeout: 20000 });
+  await email.click();
   await email.fill(credential.username);
 
   const pass = await page.waitForSelector(passSel, { timeout: 5000 });
+  await pass.click();
   await pass.fill(credential.password);
 
   const submit = await page.waitForSelector(submitSel, { timeout: 5000 });
