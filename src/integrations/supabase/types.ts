@@ -59,6 +59,7 @@ export type Database = {
           created_at: string
           flag_emoji: string | null
           id: string
+          monitoring_status: Database["public"]["Enums"]["country_monitoring_status"]
           monthly_price_cents: number
           name: string
         }
@@ -68,6 +69,7 @@ export type Database = {
           created_at?: string
           flag_emoji?: string | null
           id?: string
+          monitoring_status?: Database["public"]["Enums"]["country_monitoring_status"]
           monthly_price_cents?: number
           name: string
         }
@@ -77,6 +79,7 @@ export type Database = {
           created_at?: string
           flag_emoji?: string | null
           id?: string
+          monitoring_status?: Database["public"]["Enums"]["country_monitoring_status"]
           monthly_price_cents?: number
           name?: string
         }
@@ -716,6 +719,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      country_monitoring_status: "live" | "coming_soon"
       notification_channel:
         | "web_push"
         | "email"
@@ -859,6 +863,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      country_monitoring_status: ["live", "coming_soon"],
       notification_channel: [
         "web_push",
         "email",
