@@ -497,31 +497,52 @@ export type Database = {
       }
       subscriptions: {
         Row: {
-          country_id: string
+          cancel_at_period_end: boolean
+          country_id: string | null
           created_at: string
           current_period_end: string | null
+          current_period_start: string | null
+          environment: string
           id: string
+          plan_code: string | null
+          price_id: string | null
+          product_id: string | null
           status: Database["public"]["Enums"]["subscription_status"]
+          stripe_customer_id: string | null
           stripe_subscription_id: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
-          country_id: string
+          cancel_at_period_end?: boolean
+          country_id?: string | null
           created_at?: string
           current_period_end?: string | null
+          current_period_start?: string | null
+          environment?: string
           id?: string
+          plan_code?: string | null
+          price_id?: string | null
+          product_id?: string | null
           status?: Database["public"]["Enums"]["subscription_status"]
+          stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
-          country_id?: string
+          cancel_at_period_end?: boolean
+          country_id?: string | null
           created_at?: string
           current_period_end?: string | null
+          current_period_start?: string | null
+          environment?: string
           id?: string
+          plan_code?: string | null
+          price_id?: string | null
+          product_id?: string | null
           status?: Database["public"]["Enums"]["subscription_status"]
+          stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
           updated_at?: string
           user_id?: string
@@ -663,6 +684,10 @@ export type Database = {
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
         Returns: number
+      }
+      has_active_subscription: {
+        Args: { check_env?: string; user_uuid: string }
+        Returns: boolean
       }
       has_role: {
         Args: {

@@ -37,7 +37,13 @@ function LoginPage() {
       return;
     }
     toast.success("Welcome back");
-    navigate({ to: "/dashboard" });
+    const pending = sessionStorage.getItem("pending_plan");
+    if (pending) {
+      sessionStorage.removeItem("pending_plan");
+      navigate({ to: "/dashboard/billing", search: { plan: pending } as any });
+    } else {
+      navigate({ to: "/dashboard" });
+    }
   };
 
   const onGoogle = async () => {
