@@ -25,7 +25,7 @@ function HowItWorks() {
           {[
             { Icon: Eye, title: "We watch the appointment calendars", body: "A fleet of always-on workers checks the official appointment calendar of every supported visa centre every 30–60 seconds. We use legitimate browser sessions, residential network connections, and respect each provider's rate limits." },
             { Icon: Bell, title: "We detect new openings instantly", body: "When the calendar goes from \"no slots\" to \"slot on 14 May 09:30\", our system fires a webhook within seconds. Each detection is deduplicated so you don't get hammered with repeats." },
-            { Icon: Calendar, title: "We alert only the right people", body: "Your tracker says you want France short-stay in Dublin? You get pinged. Your friend who tracks Germany work? They don't. Filters respect your alert window (e.g. only weekdays 9–18) so you sleep at night." },
+            { Icon: Calendar, title: "We alert only the right people", body: "Your tracker says you want Netherlands short-stay in Dublin? You get pinged. Your friend who tracks Austria work? They don't. Filters respect your alert window (e.g. only weekdays 9–18) so you sleep at night." },
             { Icon: Shield, title: "You book it yourself", body: "Every alert deep-links to the official VFS / BLS / TLS booking page. We never log into your account or auto-book — that would breach provider terms and put your application at risk. The booking, the payment, the documents — all you, on the official site." },
           ].map(({ Icon, title, body }) => (
             <div key={title} className="flex gap-5">
