@@ -17,6 +17,9 @@ const {
   HEARTBEAT_SEC = '300',
   HEADLESS = 'true',
   USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
+  PROXY_SERVER,
+  PROXY_USERNAME,
+  PROXY_PASSWORD,
 } = process.env;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -148,7 +151,16 @@ export async function runScraper({ provider, targetsFile, extractSlots, login })
     }
   }
 
-  const browser = await chromium.launch({ headless: HEADLESS !== 'false' });
+  const launchOpts = { headless: HEADLESS !== 'false' };
+  if (PROXY_SERVER) {
+    launchOpts.proxy = {
+      server: PROXY_SERVER,
+      ...(PROXY_USERNAME && { username: PROXY_USERNAME }),
+      ...(PROXY_PASSWORD && { password: PROXY_PASSWORD }),
+    };
+    console.log(`[${provider}][proxy] routing through ${PROXY_SERVER}`);
+  }
+  const browser = await chromium.launch(launchOpts);
   console.log(`[${provider}][start] ${targets.length} targets, every ${POLL_INTERVAL_SEC}s (+jitter ${JITTER_SEC}s)`);
 
   do {
