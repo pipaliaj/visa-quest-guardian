@@ -18,11 +18,12 @@ export const Route = createFileRoute("/")({
 });
 
 const COUNTRIES = [
-  { flag: "🇫🇷", name: "France", provider: "VFS Global · Dublin" },
-  { flag: "🇩🇪", name: "Germany", provider: "VFS Global · Dublin" },
-  { flag: "🇪🇸", name: "Spain", provider: "BLS International · Dublin" },
-  { flag: "🇮🇹", name: "Italy", provider: "VFS Global · Dublin" },
   { flag: "🇳🇱", name: "Netherlands", provider: "VFS Global · Dublin" },
+  { flag: "🇦🇹", name: "Austria", provider: "VFS Global · Dublin" },
+  { flag: "🇭🇷", name: "Croatia", provider: "VFS Global · Dublin" },
+  { flag: "🇩🇰", name: "Denmark", provider: "VFS Global · Dublin" },
+  { flag: "🇫🇮", name: "Finland", provider: "VFS Global · Dublin" },
+  { flag: "🇮🇸", name: "Iceland", provider: "VFS Global · Dublin" },
 ];
 
 function Index() {
@@ -38,7 +39,7 @@ function Index() {
         <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
             <Badge variant="secondary" className="mb-6 bg-white/10 text-white backdrop-blur border-white/20">
-              <Activity className="mr-1.5 h-3 w-3" /> Watching 5 centres · 24/7
+              <Activity className="mr-1.5 h-3 w-3" /> Watching 6 centres · 24/7
             </Badge>
             <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
               Schengen visa slots,<br />
@@ -87,13 +88,13 @@ function Index() {
           <div className="mb-10 flex items-end justify-between gap-4">
             <div>
               <p className="text-sm font-medium text-accent-foreground/70">Live coverage</p>
-              <h2 className="mt-1 text-3xl font-bold tracking-tight">5 countries · expanding fast</h2>
+              <h2 className="mt-1 text-3xl font-bold tracking-tight">6 countries · more on the way</h2>
             </div>
             <Button asChild variant="outline" size="sm">
               <Link to="/countries">All countries <ArrowRight className="ml-1 h-3.5 w-3.5" /></Link>
             </Button>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {COUNTRIES.map((c) => (
               <Card key={c.name} className="p-5 transition hover:-translate-y-0.5 hover:shadow-md">
                 <div className="text-3xl">{c.flag}</div>

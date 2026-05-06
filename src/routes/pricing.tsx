@@ -21,7 +21,7 @@ const TIERS = [
     name: "Single country",
     price: "€19",
     period: "/ country / month",
-    desc: "Track one country at one centre. Perfect if you only need a France or Spain appointment.",
+    desc: "Track one country at one centre. Perfect if you only need a Netherlands or Austria appointment.",
     features: ["Web push + email alerts", "Sub-minute detection", "7-day free trial", "Cancel anytime"],
     cta: "Start trial",
     plan: "single_country_monthly",
