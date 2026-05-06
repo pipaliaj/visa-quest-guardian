@@ -9,7 +9,7 @@ export const Route = createFileRoute("/countries")({
   head: () => ({
     meta: [
       { title: "Supported countries · SchengenSlot" },
-      { name: "description", content: "We monitor Schengen visa appointments for France, Germany, Spain, Italy and Netherlands from Ireland." },
+      { name: "description", content: "We monitor Schengen visa appointments for Netherlands, Austria, Croatia, Denmark, Finland and Iceland from Ireland. France, Germany, Italy and Spain coming soon." },
     ],
   }),
   component: Countries,
