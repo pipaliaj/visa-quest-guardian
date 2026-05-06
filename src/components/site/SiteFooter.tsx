@@ -35,8 +35,11 @@ export function SiteFooter() {
             </p>
           </div>
         </div>
-        <div className="mt-10 border-t border-border/60 pt-6 text-xs text-muted-foreground">
-          © {new Date().getFullYear()} SchengenSlot. Made in Ireland.
+        <div className="mt-10 space-y-1 border-t border-border/60 pt-6 text-xs text-muted-foreground">
+          <p>
+            SchengenSlot is operated by Jay Pipalia, sole trader, based in Ireland. Web: jaypipalia.com · Contact: hello@jaypipalia.com
+          </p>
+          <p>© {new Date().getFullYear()} Jay Pipalia trading as SchengenSlot. All rights reserved.</p>
         </div>
       </div>
     </footer>
